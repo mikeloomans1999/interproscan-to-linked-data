@@ -1,0 +1,110 @@
+{
+  "@context": {
+    "@vocab": "http://example.org/",
+    "interproscan-version": "interproscan-version",
+    "results": {
+      "@id": "results",
+      "@type": "@id",
+      "@container": "@list",
+      "@context": {
+        "sequence": "sequence",
+        "md5": "md5",
+        "matches": {
+          "@id": "matches",
+          "@type": "@id",
+          "@container": "@list",
+          "@context": {
+            "signature": {
+              "@id": "signature",
+              "@type": "@id",
+              "@context": {
+                "accession": "accession",
+                "name": "name",
+                "description": "description",
+                "signatureLibraryRelease": {
+                  "@id": "signatureLibraryRelease",
+                  "@type": "@id",
+                  "@context": {
+                    "library": "library",
+                    "version": "version"
+                  }
+                },
+                "entry": {
+                  "@id": "entry",
+                  "@type": "@id",
+                  "@context": {
+                    "accession": "accession",
+                    "name": "name",
+                    "description": "description",
+                    "type": "type",
+                    "goXRefs": {
+                      "@id": "goXRefs",
+                      "@type": "@id",
+                      "@container": "@list",
+                      "@context": {
+                        "name": "name",
+                        "databaseName": "databaseName",
+                        "category": "category",
+                        "id": "id"
+                      }
+                    },
+                    "pathwayXRefs": {
+                      "@id": "pathwayXRefs",
+                      "@type": "@id",
+                      "@container": "@list",
+                      "@context": {
+                        "name": "name",
+                        "databaseName": "databaseName",
+                        "id": "id"
+                      }
+                    }
+                  }
+                },
+                "locations": {
+                  "@id": "locations",
+                  "@type": "@id",
+                  "@container": "@list",
+                  "@context": {
+                    "start": "start",
+                    "end": "end",
+                    "hmmStart": "hmmStart",
+                    "hmmEnd": "hmmEnd",
+                    "hmmLength": "hmmLength",
+                    "hmmBounds": "hmmBounds",
+                    "evalue": "evalue",
+                    "score": "score",
+                    "envelopeStart": "envelopeStart",
+                    "envelopeEnd": "envelopeEnd",
+                    "postProcessed": "postProcessed",
+                    "location-fragments": {
+                      "@id": "location-fragments",
+                      "@type": "@id",
+                      "@container": "@list",
+                      "@context": {
+                        "start": "start",
+                        "end": "end",
+                        "dc-status": "dc-status"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "evalue": "evalue",
+            "score": "score",
+            "model-ac": "model-ac"
+          }
+        },
+        "xref": {
+          "@id": "xref",
+          "@type": "@id",
+          "@container": "@list",
+          "@context": {
+            "name": "name",
+            "id": "id"
+          }
+        }
+      }
+    }
+  }
+}

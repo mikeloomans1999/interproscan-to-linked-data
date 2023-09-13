@@ -57,7 +57,7 @@ class TestinterproLinkage(unittest.TestCase):
         assert os.path.exists("./example/GCA_003004595.1.prodigal-Pfam.interproscan_small.trix")
         assert os.path.getsize("./example/GCA_003004595.1.prodigal-Pfam.interproscan_small.trix") > 1000
         #os.remove("./example/GCA_003004595.1.prodigal-Pfam.interproscan_small.trix")
-
+    
     def test_nquads(self):
         il.main("./example/GCA_003004595.1.prodigal-Pfam.interproscan_small.json", "./example/GCA_003004595.1.prodigal-Pfam.interproscan_small.nquads")
         assert os.path.exists("./example/GCA_003004595.1.prodigal-Pfam.interproscan_small.nquads")

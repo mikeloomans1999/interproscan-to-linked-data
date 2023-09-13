@@ -6,7 +6,8 @@ from argparse import ArgumentError, RawTextHelpFormatter, ArgumentParser
 from genericpath import isfile
 from rdflib import Graph
 
-parser = ArgumentParser(description="""
+parser = ArgumentParser(
+    description="""
                         RDF Format 	 Keyword 	                 Notes 
                         JSON-LD  	 json-ld 	                 JSON Linked Data lightweight Linked Data format 
                         Turtle 	         turtle, ttl or turtle2 	 turtle2 is just turtle with more spacing & linebreaks 
@@ -16,13 +17,14 @@ parser = ArgumentParser(description="""
                         Trig             trig 	                         Turtle-like format for RDF triples + context (RDF quads) and thus multiple graphs 
                         Trix             trix 	                         RDF/XML-like format for RDF quads 
                         N-Quads 	 nquads 	                 N-Triples-like format for RDF quads 
-                        """,  
-                        formatter_class=RawTextHelpFormatter)
+                        """,
+    formatter_class=RawTextHelpFormatter,
+)
 input_arg = parser.add_argument(
     "-i",
     "--input",
     help="input file format being json output from interproscan.",
-    default="./example/GCA_003004595.1.prodigal-Pfam.interproscan_small.json",
+    default="./example/iprscan5-JobID.json",
     type=str,
 )
 
@@ -30,7 +32,7 @@ outut_arg = parser.add_argument(
     "-o",
     "--output",
     help="output file with jsonld, ttl, rdf, xml, nt, ntll, n3, trig, trix or nquads file extension.",
-    default="./example/GCA_003004595.1.prodigal-Pfam.interproscan_small.ttl",
+    default="./example/iprscan5-JobID.json.ttl",
     type=str,
 )
 
@@ -56,101 +58,25 @@ output_format_dict = {
 }
 
 
-
-
 # Define interpro JSON data
-json_context = {
-    {"@context": {
-        "@vocab": "https://www.ebi.ac.uk/interpro/",
-        "results": {
-        "@id": "results",
-        "@container": "@list",
-        "sequence": "sequence",
-        "md5": "md5",
-        "matches": {
-            "@id": "matches",
-            "@container": "@list",
-            "signature": "signature",
-            "accession": "accession",
-            "name": "name",
-            "description": "description",
-            "signatureLibraryRelease": {
-            "@id": "signatureLibraryRelease",
-            "library": "library",
-            "version": "version"
-            },
-            "entry": {
-            "@id": "entry",
-            "accession": "accession",
-            "name": "name",
-            "description": "description",
-            "type": "type",
-            "goXRefs": {
-                "@id": "goXRefs",
-                "@container": "@list",
-                "name": "name",
-                "databaseName": "databaseName",
-                "category": "category",
-                "id": "id"
-            },
-            "pathwayXRefs": {
-                "@id": "pathwayXRefs",
-                "@container": "@list",
-                "name": "name",
-                "databaseName": "databaseName",
-                "id": "id"
-            }
-            },
-            "locations": {
-                "@id": "locations",
-                "@container": "@list",
-                "start": "start",
-                "end": "end",
-                "hmmStart": "hmmStart",
-                "hmmEnd": "hmmEnd",
-                "hmmLength": "hmmLength",
-                "hmmBounds": "hmmBounds",
-                "evalue": "evalue",
-                "score": "score",
-                "envelopeStart": "envelopeStart",
-                "envelopeEnd": "envelopeEnd",
-                "postProcessed": "postProcessed",
-                "location-fragments": {
-                    "@id": "location-fragments",
-                    "@container": "@list",
-                    "start": "start",
-                    "end": "end",
-                    "dc-status": "dc-status"
-                }
-            },
-            "evalue": "evalue",
-            "score": "score",
-            "model-ac": "model-ac"
-            }
-            },
-            "xref": {
-            "@id": "xref",
-            "@container": "@list",
-            "name": "name",
-            "id": "id"
-            }
-        }
-    }
-}
+
+json_context = load(open("./jsonld_context.json", "r"))
+
 
 def main(input_file_path: str, output_file_path: str):
     output_file_extension = output_file_path.split(".")[-1]
     if output_file_extension not in output_format_dict.keys():
         parser.print_help()
-        raise ArgumentError(outut_arg, args.output + " output file extension not supported.")
+        raise ArgumentError(
+            outut_arg, args.output + " output file extension not supported."
+        )
     output_format = output_format_dict[output_file_extension]
-
 
     # Read JSON data
     with open(input_file_path, "r") as input_file:
         json_data = load(input_file)
         # Convert JSON to JSON-LD
-        jsonld_data = jsonld.expand(json_data, {'expandContext': json_context})[0]
+        jsonld_data = jsonld.expand(json_data, {"expandContext": json_context})[0]
 
     if output_format == "jsonld":
         # Save the JSON-LD data
@@ -161,9 +87,10 @@ def main(input_file_path: str, output_file_path: str):
         graph_parser = Graph()
         graph_parser.parse(data=dumps(jsonld_data), format="json-ld")
         with open(output_file_path, "w") as output_file:
-            graph_parser.serialize(destination=output_file_path, format=output_format, indent=4)
+            graph_parser.serialize(
+                destination=output_file_path, format=output_format, indent=1
+            )
+
 
 if __name__ == "__main__":
-   main(args.input, args.output)
-
-_:node2
+    main(args.input, args.output)
