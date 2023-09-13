@@ -2,7 +2,7 @@
 Convert interproscan json format to linked data format (rdf, turtle, json-ld, n3, xml, nquad, trix, trig)
 
 
-Run interproscan with the example protein sequence on [inteproscan](https://www.ebi.ac.uk/interpro/search/sequence/)
+Run interproscan with the example protein sequence on [interproscan](https://www.ebi.ac.uk/interpro/search/sequence/)
 
 ```
 >example protein sequence
@@ -29,7 +29,6 @@ PPSEAPEETL LHEQRFRRLN SQQPEVAEQLW KDAAADLQKRY DFLAQMAGKA EKSNTD
 
 Save the results in json format
 
-
 Running the script
 ```
 python3 interproLinkage.py [-h] [-i INPUT] [-o OUTPUT]
@@ -37,58 +36,40 @@ python3 interproLinkage.py [-h] [-i INPUT] [-o OUTPUT]
 
 For the example file assuming your terminal is active in the git repo. 
 ```
-python3 interproLinkage.py -i example/iprscan5-JobID.json -o iprscan5-JobID.ttl
+python3 interproLinkage.py -i example/iprscan5-[JobID].json -o iprscan5-[JobID].ttl
 ```
 
-Querying the created turtle file using SPARQL in GraphDB
+Querying the created turtle file using SPARQL in GraphDB,
+We want all PFAM annotations that match and match's evalue with description of the domain. 
 ```
 PREFIX ns1: <https://www.ebi.ac.uk/interpro/>
 SELECT DISTINCT ?accession ?evalue ?description
 WHERE {
-    VALUES ?library {"PFAM"}
+  # Define HMM library
+  VALUES ?library {"PFAM"}
+
+  # Get evalue creating redundant variable ?k
   ?k ns1:evalue ?evalue .
+
+  # Get the parent location variable. 
   ?location ns1:locations ?k .
  
+  # Create a path from the library to the overlapping parent location for linkage. 
   ?lib_parent ns1:library ?library .
   ?entry ns1:accession ?accession ; 
          ns1:signatureLibraryRelease ?lib_parent .
-
   ?location ns1:signature ?entry .
+
+  # Match the description to the PFAM annotation entry. 
   ?entry ns1:description ?description .  
 }
 ```
 
-output
-```
-  "head": {
-    "vars": [
-      "pfam",
-      "eval"
-    ]
-  },
-  "results": {
-    "bindings": [
-      {
-        "pfam": {
-          "type": "literal",
-          "value": "PF09574"
-        },
-        "eval": {
-          "datatype": "http://www.w3.org/2001/XMLSchema#double",
-          "type": "literal",
-          "value": "1.3e-24"
-        }
-      },
-      {
-        "pfam": {
-          "type": "literal",
-          "value": "PF09842"
-        },
-        "eval": {
-          "datatype": "http://www.w3.org/2001/XMLSchema#double",
-          "type": "literal",
-          "value": "2.8e-28"
-        }
-      },
-      ......
-      ```
+example output, the exact output can change as knowledge increases. 
+| accession | evalue                | description                                         |
+|-----------|-----------------------|-----------------------------------------------------|
+| "PF17147" | "9e-16"^^xsd:double   | "Pyruvate:ferredoxin oxidoreductase core domain II" |
+| "PF10371" | "2.8e-23"^^xsd:double | "Domain of unknown function"                        |
+| "PF01558" | "6.3e-34"^^xsd:double | "Pyruvate ferredoxin/flavodoxin oxidoreductase"     |
+| "PF12838" | "1.5e-09"^^xsd:double | "4Fe-4S dicluster domain"                           |
+....

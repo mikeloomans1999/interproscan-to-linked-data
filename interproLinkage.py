@@ -6,41 +6,6 @@ from argparse import ArgumentError, RawTextHelpFormatter, ArgumentParser
 from genericpath import isfile
 from rdflib import Graph
 
-parser = ArgumentParser(
-    description="""
-                        RDF Format 	 Keyword 	                 Notes 
-                        JSON-LD  	 json-ld 	                 JSON Linked Data lightweight Linked Data format 
-                        Turtle 	         turtle, ttl or turtle2 	 turtle2 is just turtle with more spacing & linebreaks 
-                        RDF/XML 	 xml or pretty-xml      	 Pretty xml. 
-                        N-Triples 	 triples, nt or nt11 	         nt11 is exactly like nt, only utf8 encoded 
-                        Notation-3 	 n3 	                         N3 is a superset of Turtle that also caters for rules and a few other things                   
-                        Trig             trig 	                         Turtle-like format for RDF triples + context (RDF quads) and thus multiple graphs 
-                        Trix             trix 	                         RDF/XML-like format for RDF quads 
-                        N-Quads 	 nquads 	                 N-Triples-like format for RDF quads 
-                        """,
-    formatter_class=RawTextHelpFormatter,
-)
-input_arg = parser.add_argument(
-    "-i",
-    "--input",
-    help="input file format being json output from interproscan.",
-    default="./example/iprscan5-JobID.json",
-    type=str,
-)
-
-outut_arg = parser.add_argument(
-    "-o",
-    "--output",
-    help="output file with jsonld, ttl, rdf, xml, nt, ntll, n3, trig, trix or nquads file extension.",
-    default="./example/iprscan5-JobID.json.ttl",
-    type=str,
-)
-
-args = parser.parse_args()
-
-if not isfile(args.input):
-    raise ArgumentError(input_arg, args.input + " input does not exist.")
-
 output_format_dict = {
     "ttl": "turtle",
     "json-ld": "jsonld",
@@ -48,18 +13,13 @@ output_format_dict = {
     "rdf": "pretty-xml",
     "xml": "xml",
     "nt": "nt",
-    "ntll": "nt11",
     "n3": "n3",
     "trig": "trig",
-    "trix": "trix",
-    "nquads": "nquads",
     "turtle": "turtle",
-    "turtle2": "turtle2",
 }
 
 
-# Define interpro JSON data
-
+# Define context for interpro JSON data
 json_context = load(open("./jsonld_context.json", "r"))
 
 
@@ -93,4 +53,34 @@ def main(input_file_path: str, output_file_path: str):
 
 
 if __name__ == "__main__":
+    parser = ArgumentParser(
+        description="""
+                            Format 	 Keyword 	                 Notes 
+                            JSON-LD  	 json-ld 	                 JSON Linked Data lightweight Linked Data format 
+                            Turtle 	         turtle, ttl or turtle2 	 turtle2 is just turtle with more spacing & linebreaks mnot supported now
+                            RDF/XML 	 xml or pretty-xml      	 pretty xml. 
+                            Notation-3 	 n3 	                         N3 is a superset of Turtle that also caters for rules and a few other things                   
+                            Trig             trig 	                         turtle-like format for RDF triples + context (RDF quads) and thus multiple graphs 
+                            """,
+        formatter_class=RawTextHelpFormatter,
+    )
+    input_arg = parser.add_argument(
+        "-i",
+        "--input",
+        help="input file format being json output from interproscan.",
+        type=str
+    )
+
+    outut_arg = parser.add_argument(
+        "-o",
+        "--output",
+        help="output file with jsonld, ttl, rdf, xml, nt, ntll, n3, trig, trix or nquads file extension.",
+        type=str
+    )
+
+    args = parser.parse_args()
+
+    if not isfile(args.input):
+        raise ArgumentError(input_arg, args.input + " input does not exist.")
+
     main(args.input, args.output)
